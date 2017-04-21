@@ -1,0 +1,33 @@
+catalog:
+  services: # catalog must advertise at least one service
+    - id: c77347e6-1ef2-4b42-a92a-cb936eb159a6
+      name: elasticsearch-server
+      description: Provides search function based on elasticsearch server..
+      bindable: true
+      plan_updateable: true
+      tags:
+        - elasticsearch
+      metadata:
+        displayName: Search Server
+        imageUrl: https://raw2.github.com/github/media/master/octocats/blacktocat-32.png
+        longDescription: The service provide search etc functions associated with search engine. Binding an app creates a index for searching and storing.
+        providerDisplayName: SearchServer
+        # documentationUrl: https://github.com/cloudfoundry-samples/github-service-broker-ruby
+        # supportUrl: https://github.com/cloudfoundry-samples/github-service-broker-ruby
+      plans: # a service has one or more plans
+        - id: bc257c1c-b109-4620-88a4-f2ff88901ac3
+          name: free
+          description: only use one index
+          metadata:
+            bullets:
+              - Only use one index
+            costs:
+              - amount:
+                  usd: 0.0
+                unit: MONTHLY
+            displayName: Free
+
+# credentials for Cloud Controller to authenticate with the broker
+basic_auth:
+  username: admin
+  password: password
