@@ -1,3 +1,2 @@
 # 忽略Gemfile.lock文件
-Gemfile.lock
 tmp/
