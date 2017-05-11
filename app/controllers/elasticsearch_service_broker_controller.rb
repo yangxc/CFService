@@ -3,7 +3,7 @@
 # 实现Elasticsearch的Service Broker
 class ElasticsearchServiceBrokerController < ApplicationController
 
-  #before_filter :authenticate
+  before_filter :authenticate
 
   # 实现服务目录
   # get '/v2/catalog'
