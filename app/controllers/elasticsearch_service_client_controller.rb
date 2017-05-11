@@ -6,6 +6,7 @@ require 'faraday'
 class ElasticsearchServiceClientController < ApplicationController
 
   @@ElasticsearchUri = 'http://localhost:9200'
+
   def search
 
   end
@@ -15,4 +16,5 @@ class ElasticsearchServiceClientController < ApplicationController
     elasticsearchInfo = Faraday.get @@ElasticsearchUri
     render json: elasticsearchInfo['body']
   end
+
 end
