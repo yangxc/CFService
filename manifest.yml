@@ -2,4 +2,5 @@
 applications:
 - name: elasticsearch-server
   memory: 512M
+  instances: 1
   buildpack: ruby_buildpack
