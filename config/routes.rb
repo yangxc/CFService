@@ -11,4 +11,7 @@ Rails.application.routes.draw do
   delete '/v2/service_instances/:instance_id', to:'elasticsearch_service_broker#deprovisioning'
   # 获取Elasticsearch Server的基本状态信息
   get '/v1/search/info', to: 'elasticsearch_service_client#info'
+
+  # 创建索引
+  get '/v1/:instance_id/create_index', to: 'elasticsearch_service_client#create_index'
 end

@@ -54,6 +54,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
+    hashie (3.5.5)
     i18n (0.8.1)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
@@ -127,6 +128,7 @@ DEPENDENCIES
   byebug
   elasticsearch
   faraday (~> 0.12.0.1)
+  hashie
   puma (~> 3.0)
   rails (~> 5.0.2)
   sqlite3

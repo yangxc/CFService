@@ -28,6 +28,7 @@ gem 'faraday', '~> 0.12.0.1'
 # gem 'rack-cors'
 
 gem 'elasticsearch'
+gem 'hashie'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
