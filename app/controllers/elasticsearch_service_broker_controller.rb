@@ -43,8 +43,8 @@ class ElasticsearchServiceBrokerController < ApplicationController
   end
 
   def authenticate
-    authenticate_or_request_with_http_basic do |username, password|
-      username == "#{APP_CONFIG['basic_auth']['username']}" && password == "#{APP_CONFIG['basic_auth']['password']}"
-    end
+
+    http_basic_authenticate_with name: APP_CONFIG['basic_auth']['username'], password: APP_CONFIG['basic_auth']['password']
+
   end
 end
