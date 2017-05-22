@@ -3,7 +3,10 @@
 # 实现Elasticsearch的Service Broker
 class ElasticsearchServiceBrokerController < ApplicationController
 
-  # before_filter :authenticate
+  include ActionController::HttpAuthentication::Basic::ControllerMethods
+
+  before_action :authenticate
+  # http_basic_authenticate_with name: APP_CONFIG['basic_auth']['username'], password: APP_CONFIG['basic_auth']['password']
 
   # 实现服务目录
   # get '/v2/catalog'
@@ -43,8 +46,8 @@ class ElasticsearchServiceBrokerController < ApplicationController
   end
 
   def authenticate
-
-    http_basic_authenticate_with name: APP_CONFIG['basic_auth']['username'], password: APP_CONFIG['basic_auth']['password']
-
+    authenticate_or_request_with_http_basic do |username, password|
+      username == "foo" && password == "bar"
+    end
   end
 end
