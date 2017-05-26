@@ -147,7 +147,3 @@ conn.post do |req|
 end
 =end
 end
-index_info = {'index' => 'books'}
-query_info = {'query_field' => 'name', 'query_value' => 'yangxc'}
-# ElasticPera.delete_index(index: 'adults')
-ElasticPera.analyze_field index_info, query_info
