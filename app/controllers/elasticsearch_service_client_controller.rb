@@ -15,6 +15,10 @@ class ElasticsearchServiceClientController < ApplicationController
     render json: {}
   end
 
+  def index_document
+
+  end
+
   def search
 
   end

@@ -116,7 +116,7 @@ module ElasticPera
   # 返回elastic search server基本信息
   def self.elasticServerInfo
     if defined? APP_CONFIG
-      return {host: APP_CONFIG[:elastic_info][:host], port: APP_CONFIG[:elastic][:port]}
+      return {'host' => APP_CONFIG[:elastic_info][:host], 'port' => APP_CONFIG[:elastic][:port]}
     else
       return {'host' => 'http://localhost', 'port' => 9200}
     end
