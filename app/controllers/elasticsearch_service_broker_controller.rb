@@ -32,7 +32,9 @@ class ElasticsearchServiceBrokerController < ApplicationController
     instance_id = generateIndexName instance_id
     ElasticPera.create_index index:instance_id
     # TODO:instance_id密钥的生成应该是planid + instanceid这样后面能区分操作是那个planid下的，以便判断能执行什么操作
-    render json: {elastic_url: "http://localhost:3000/#{instance_id}"}
+    render json: {credentials: {
+        uri: request.root
+    }}
   end
 
   # 服务解绑
