@@ -46,10 +46,14 @@ module ApplicationHelper
   # index_info['index'] 索引名称
   # index_info['type'] 索引类型
   # document 要索引文档的json表现形式
-  def index_document(index_info, document)
+  def index_document_helper(index_info, document)
     client = connectES
-    response = client.index index: index_info[:index], type: index_info[:type], id: document[:id], body: document
+    document_hash = str_2_json document
+    document_id = document_hash.delete 'id'
+    response = client.index index: index_info[:index], type: index_info[:type], id: document_id, body: document_hash
   end
+
+  # 索引一批文档
 
   def self.index_documents(index_info, documents)
   end
@@ -62,16 +66,16 @@ module ApplicationHelper
   # query_info['query_value'] 要查询的值
   # query_info['from'] 返回结果的开始位置
   # query_info['size'] 返回结果的大小
-  def search(index_info, query_info)
+  def search_helper(index_info, query_info)
     client = connectES
     response = client.search index: index_info[:index],
                              type: index_info[:type],
                              body: {
-                                 query: { query_info[:query_type] => { query_info[:query_field] => query_info[:query_value]}},
+                                 query: {query_info[:query_type] => {query_info[:query_field] => query_info[:query_value]}},
                                  from: query_info[:from],
                                  size: query_info[:size]
                              }
-    puts response['hits']['hits']
+    puts response['hits']['hits'].class
 
   end
 
@@ -106,21 +110,7 @@ module ApplicationHelper
 
   # 创建elasticsearch客户端
   def connectES
-    if defined? APP_CONFIG
-      Elasticsearch::Client.new hosts: [{
-        host: APP_CONFIG['elastic_info']['host'],
-        port: APP_CONFIG['elastic_info']['port'],
-        log: true,
-        request_timeout: 5*60
-      }]
-    else
-      Elasticsearch::Client.new hosts: [{
-                                            host: 'localhost',
-                                            port: 9200,
-                                            log: true,
-                                            request_timeout: 5*60
-                                        }]
-    end
+    Elasticsearch::Client.new host: "#{APP_CONFIG['elastic_info']['host']}:#{APP_CONFIG['elastic_info']['port']}", log: true
   end
 
   # 返回elastic search server基本信息
@@ -133,8 +123,8 @@ module ApplicationHelper
   end
 
   # 基于传入参数形成待索引的文档
-  def object_2_json(object)
-    return json.to_json object
+  def str_2_json(string)
+    return JSON.parse string
   end
 
   def connectESByFarady(connectInfo)
@@ -142,9 +132,9 @@ module ApplicationHelper
     url = connectInfo['host'] + ':' + connectInfo['port'].to_s
 
     Faraday.new(:url => url) do |faraday|
-      faraday.request  :url_encoded             # form-encode POST params
-      faraday.response :logger                  # log requests to STDOUT
-      faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
+      faraday.request :url_encoded # form-encode POST params
+      faraday.response :logger # log requests to STDOUT
+      faraday.adapter Faraday.default_adapter # make requests with Net::HTTP
     end
 
   end

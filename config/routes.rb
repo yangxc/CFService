@@ -12,7 +12,8 @@ Rails.application.routes.draw do
   # 获取Elasticsearch Server的基本状态信息
   get '/v1/search/info', to: 'elasticsearch_service_client#info'
   # 索引文档
-  post '/v1/search/index_document/:instance_id/:type', to: 'elasticsearch_service_client#index_document'
+  post '/v1/:instance_id/:type/index_document', to: 'elasticsearch_service_client#index_document'
   # 创建索引
   post '/v1/:instance_id/create_index', to: 'elasticsearch_service_client#create_index'
+  # 查询文档
 end
