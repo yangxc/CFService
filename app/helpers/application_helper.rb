@@ -68,10 +68,11 @@ module ApplicationHelper
   # query_info['size'] 返回结果的大小
   def search_helper(index_info, query_info)
     client = connectES
+    query_field = query_info[:query_field] || '_all'
     response = client.search index: index_info[:index],
                              type: index_info[:type],
                              body: {
-                                 query: {query_info[:query_type] => {query_info[:query_field] => query_info[:query_value]}},
+                                 query: {query_info[:query_type] => {query_field => query_info[:query_value]}},
                                  from: query_info[:from],
                                  size: query_info[:size]
                              }

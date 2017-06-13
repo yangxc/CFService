@@ -16,4 +16,5 @@ Rails.application.routes.draw do
   # 创建索引
   post '/v1/:instance_id/create_index', to: 'elasticsearch_service_client#create_index'
   # 查询文档
+  get '/v1/:instance_id/:type/search', to: 'elasticsearch_service_client#search'
 end
