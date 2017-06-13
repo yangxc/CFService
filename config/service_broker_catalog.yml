@@ -31,3 +31,6 @@ catalog:
 basic_auth:
   username: admin
   password: password
+elastic_info:
+  host: http://localhost
+  port: 9200

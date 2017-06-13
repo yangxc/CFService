@@ -2,8 +2,7 @@ require 'elasticsearch'
 require 'json'
 require 'hashie'
 require 'faraday'
-
-module ElasticPera
+module ApplicationHelper
 
   # 根据传入的数据库及索引信息，索引数据库内容
   # database_info['driver'] 为数据库类型
@@ -13,31 +12,43 @@ module ElasticPera
   # database_info['cols'] 为要建立索引的表中的字段数组
   # index_info['type'] 为要建立索引的类型
   # index_info['index'] 为目标索引
-  def self.database_importor(database_info, index_info)
+  def database_importor(database_info, index_info)
 
   end
 
   # 创建索引
   # index_info['index'] 要创建的索引名称
-  def self.create_index(index_info)
+  # mapping 创建索引的映射信息
+  def create_index_helper(index, mapping = nil)
     conn = connectESByFarady elasticServerInfo
-    conn.put "/#{index_info[:index]}"
+    response = nil
+    # 创建索引
+    unless mapping
+      response = conn.put "/#{index}"
+    else
+      response = conn.put do |req|
+        req.url "/#{index}"
+        req.headers['Content-Type'] = 'application/json'
+        req.body = mapping
+      end
+    end
+    puts response.body
   end
 
   # 删除索引
-  # index_info['index'] 要创建的索引名称
-  def self.delete_index(index_info)
+  # index要创建的索引名称
+  def delete_index(index)
     conn = connectESByFarady elasticServerInfo
-    conn.delete "/#{index_info[:index]}"
+    conn.delete "/#{index}"
   end
 
   # 索引一个文档
   # index_info['index'] 索引名称
   # index_info['type'] 索引类型
   # document 要索引文档的json表现形式
-  def self.index_document(index_info, document)
+  def index_document(index_info, document)
     client = connectES
-    client.index index: index_info[:index], type: index_info[:type], id: document[:id], body: document
+    response = client.index index: index_info[:index], type: index_info[:type], id: document[:id], body: document
   end
 
   def self.index_documents(index_info, documents)
@@ -51,7 +62,7 @@ module ElasticPera
   # query_info['query_value'] 要查询的值
   # query_info['from'] 返回结果的开始位置
   # query_info['size'] 返回结果的大小
-  def self.search(index_info, query_info)
+  def search(index_info, query_info)
     client = connectES
     response = client.search index: index_info[:index],
                              type: index_info[:type],
@@ -70,7 +81,7 @@ module ElasticPera
   # index_info['type'] 索引类型
   # query_info['query_field'] 要查询的字段
   # query_info['query_value'] 要查询的值
-  def self.analyze_field(index_info, query_info)
+  def analyze_field(index_info, query_info)
     conn = connectESByFarady elasticServerInfo
     response = conn.get do |request|
       request.url "/#{index_info['index']}/_analyze"
@@ -78,24 +89,23 @@ module ElasticPera
       request.body = query_info['query_value']
       request.params['field'] = query_info['query_field']
     end
-    puts 'haha'
     puts response.body
   end
 
-  def self.update_document
+  def update_document
 
   end
 
-  def self.delete_document
+  def delete_document
 
   end
 
-  def self.clear_index
+  def clear_index
 
   end
 
   # 创建elasticsearch客户端
-  def self.connectES
+  def connectES
     if defined? APP_CONFIG
       Elasticsearch::Client.new hosts: [{
         host: APP_CONFIG['elastic_info']['host'],
@@ -114,9 +124,9 @@ module ElasticPera
   end
 
   # 返回elastic search server基本信息
-  def self.elasticServerInfo
+  def elasticServerInfo
     if defined? APP_CONFIG
-      return {'host' => APP_CONFIG[:elastic_info][:host], 'port' => APP_CONFIG[:elastic][:port]}
+      return {'host' => APP_CONFIG['elastic_info']['host'], 'port' => APP_CONFIG['elastic_info']['port']}
     else
       return {'host' => 'http://localhost', 'port' => 9200}
     end
@@ -124,10 +134,10 @@ module ElasticPera
 
   # 基于传入参数形成待索引的文档
   def object_2_json(object)
-
+    return json.to_json object
   end
 
-  def self.connectESByFarady(connectInfo)
+  def connectESByFarady(connectInfo)
 
     url = connectInfo['host'] + ':' + connectInfo['port'].to_s
 

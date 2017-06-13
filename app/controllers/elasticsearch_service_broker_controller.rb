@@ -30,7 +30,7 @@ class ElasticsearchServiceBrokerController < ApplicationController
     #free在es实现安全的前提下，创建用户名和密码，现在只是基于instance_id创建索引
     instance_id = params[:instance_id]
     instance_id = generateIndexName instance_id
-    ElasticPera.create_index index:instance_id
+    create_index1 index:instance_id
     # TODO:instance_id密钥的生成应该是planid + instanceid这样后面能区分操作是那个planid下的，以便判断能执行什么操作
     render json: {credentials: {
         uri: request.root
