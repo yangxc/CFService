@@ -45,8 +45,12 @@ class ElasticsearchServiceClientController < ApplicationController
     if not request.body.string.blank?
       mapping = request.body.string
     end
-    create_index_helper instance_id,mapping
-    render status: :created
+    result = create_index_helper instance_id,mapping
+    if result.has_key? 'error'
+      render status: :internal_server_error, message: result['error']['root_cause'][0]['reason']
+    else
+      render status: :created
+    end
   end
 
   # 索引文档
@@ -61,7 +65,12 @@ class ElasticsearchServiceClientController < ApplicationController
     # 设置要查找的索引和文档类型
     index_info = {:index=>params[:instance_id], :type=>params[:type]}
     doc = request.body.string
-    index_document_helper index_info, doc
+    response = index_document_helper index_info, doc
+    if response['result'] = 'created' or response['result'] == 'updated'
+      render status: :ok
+    else
+      render status: :internal_server_error
+    end
   end
 
   # 查询文档
@@ -78,13 +87,33 @@ class ElasticsearchServiceClientController < ApplicationController
     query_info[:query_value] = params[:query_value] if params[:query_value]
     query_info[:from] = params[:from] || 0
     query_info[:size] = params[:size] || 10
-    search_helper index_info, query_info
+    response = search_helper index_info, query_info
+    if response['total'] == 0
+      render status: 204
+    else
+      results = []
+      response['hits'].each do |record|
+        document = record['_source']
+        document['id'] = record['_id']
+        results.append document
+      end
+      puts results
+      render json: results
+    end
   end
 
   # 显示Elasticsearch基本信息
   def info
     elasticsearchInfo = Faraday.get @@ElasticsearchUri
     render json: elasticsearchInfo['body']
+  end
+
+  def analyze_field
+    index_info = {:index=>params[:instance_id], :type=>params[:type]}
+    query_info = {}
+    query_info['query_value'] = params['query_value']
+    query_info['query_field'] = params['query_field']
+    puts analyze_field_helper index_info, query_info
   end
 
 end
