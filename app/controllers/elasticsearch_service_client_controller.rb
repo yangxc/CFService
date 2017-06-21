@@ -88,7 +88,9 @@ class ElasticsearchServiceClientController < ApplicationController
     query_info[:from] = params[:from] || 0
     query_info[:size] = params[:size] || 10
     response = search_helper index_info, query_info
-    if response['total'] == 0
+    if response.has_key? 'error'
+      render status: 400
+    elsif response['total'] == 0
       render status: 204
     else
       results = []

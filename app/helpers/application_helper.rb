@@ -60,7 +60,7 @@ module ApplicationHelper
 
   # 查询指定的文档
   # index_info['index'] 索引名称
-  # index_info['type'] 索引类型
+  # index_info['type'] 索引类型(支持match和)
   # query_info['query_type'] 索引类型
   # query_info['query_field'] 要查询的字段
   # query_info['query_value'] 要查询的值
@@ -68,14 +68,23 @@ module ApplicationHelper
   # query_info['size'] 返回结果的大小
   def search_helper(index_info, query_info)
     client = connectES
+    query_type_operator = query_info[:query_type]
     query_field = query_info[:query_field]
+    query_body = {}
+    if query_type_operator.eql? 'match'
+      query_body[:query] = {:match => {query_field => query_info[:query_value]}}
+    else
+      unless query_field.index ','
+        return {'error'=>'bad request arguments'}
+      end
+      query_fields = query_field.split ','
+      query_body[:query] = {:multi_match => {:query => query_info[:query_value], :fields => query_fields}}
+    end
+    query_body[:from] = query_info[:from]
+    query_body[:size] = query_info[:size]
     response = client.search index: index_info[:index],
                              type: index_info[:type],
-                             body: {
-                                 query: {query_info[:query_type] => {query_field => query_info[:query_value]}},
-                                 from: query_info[:from],
-                                 size: query_info[:size]
-                             }
+                             body: query_body
     return response['hits']
 
   end
