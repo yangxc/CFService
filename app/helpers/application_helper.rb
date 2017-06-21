@@ -72,12 +72,16 @@ module ApplicationHelper
     query_field = query_info[:query_field]
     query_body = {}
     if query_type_operator.eql? 'match'
-      query_body[:query] = {:match => {query_field => query_info[:query_value]}}
+        query_body[:query] = {:match => {query_field => query_info[:query_value]}}
     else
-      unless query_field.index ','
-        return {'error'=>'bad request arguments'}
+      if not query_field.nil?
+        unless query_field.index ','
+          return {'error'=>'bad request arguments'}
+        end
+        query_fields = query_field.split ','
+      else
+        query_fields = ['_all']
       end
-      query_fields = query_field.split ','
       query_body[:query] = {:multi_match => {:query => query_info[:query_value], :fields => query_fields}}
     end
     query_body[:from] = query_info[:from]
